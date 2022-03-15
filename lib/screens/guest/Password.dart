@@ -1,62 +1,48 @@
-// ignore_for_file: deprecated_member_use, prefer_const_constructors, avoid_print, unused_field, prefer_const_constructors_in_immutables
+// ignore_for_file: prefer_const_constructors, deprecated_member_use, unused_field
 
 import 'package:flutter/material.dart';
 
-class AuthScreen extends StatefulWidget {
+class PasswordScreen extends StatefulWidget {
   final Function(int) onChangedStep;
-
-  const AuthScreen({
+  const PasswordScreen({
     Key? key,
     required this.onChangedStep,
   }) : super(key: key);
 
   @override
-  State<AuthScreen> createState() => _State();
+  State<PasswordScreen> createState() => _PasswordScreenState();
 }
 
-class _State extends State<AuthScreen> {
+class _PasswordScreenState extends State<PasswordScreen> {
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
-  final RegExp emailRegex = RegExp(r"[a-z0-9\._-]+@[a-z0-9\._-]+\.[a-z]+");
-
-  String _email = '';
-
+  bool _isSecret = true;
+  String _password = '';
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          titleSpacing: 0.0,
+          elevation: 0,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            color: Colors.black,
+            onPressed: () => widget.onChangedStep(0),
+
+          ),
+        ),
         body: Center(
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(
               horizontal: 30.0,
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                RichText(
-                  text: TextSpan(
-                    text: 'Everyone has \n'.toUpperCase(),
-                    style: TextStyle(color: Colors.black, fontSize: 30.0),
-                    children: [
-                      TextSpan(
-                        text: 'knowledge \n'.toUpperCase(),
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextSpan(
-                        text: 'to share.'.toUpperCase(),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 10.0,
-                ),
                 Text(
-                  'It all starts here.',
+                  'password'.toUpperCase(),
                   style: TextStyle(
-                    fontStyle: FontStyle.italic,
+                    fontSize: 30.0,
                   ),
                 ),
                 SizedBox(
@@ -67,18 +53,27 @@ class _State extends State<AuthScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text('Enter your email'),
+                      Text('Enter your password'),
                       SizedBox(
                         height: 10.0,
                       ),
                       TextFormField(
-                        onChanged: (value) => setState(() => _email = value),
-                        validator: (value) =>
-                            value!.isEmpty || !emailRegex.hasMatch(value)
-                                ? 'Please enter a valid email'
-                                : null,
+                        onChanged: (value) => setState(() => _password = value),
+                        validator: (value) => value!.length < 6
+                            ? 'Enter a passwords. 6 caracters min required'
+                            : null,
+                        obscureText: _isSecret,
                         decoration: InputDecoration(
-                            hintText: 'Ex: thierno@gmail.com',
+                            suffixIcon: InkWell(
+                              onTap: () =>
+                                  setState(() => _isSecret = !_isSecret),
+                              child: Icon(
+                                !_isSecret
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                              ),
+                            ),
+                            hintText: 'Ex: ksjdvmsfvmfkjgnmes',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(0.0),
                               borderSide: BorderSide(
@@ -101,12 +96,11 @@ class _State extends State<AuthScreen> {
                         padding: EdgeInsets.symmetric(
                           vertical: 15.0,
                         ),
-                        onPressed: !emailRegex.hasMatch(_email)
+                        onPressed: _password.length < 6
                             ? null
                             : () {
                                 if (_formkey.currentState!.validate()) {
-                                  print(_email);
-                                  widget.onChangedStep(1);
+                                  print(_password);
                                 }
                               },
                         child: Text(
